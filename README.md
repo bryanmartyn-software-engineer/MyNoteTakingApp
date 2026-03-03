@@ -1,79 +1,177 @@
-This is a new [**React Native**](https://reactnative.dev) project, bootstrapped using [`@react-native-community/cli`](https://github.com/react-native-community/cli).
+Online Shop App - React Native
+A modern, feature-rich e-commerce mobile application built with React Native. This app provides a complete shopping experience with product browsing, cart management, wishlist functionality, and dark mode support.
 
-# Getting Started
+✨ Features
+Product Listing - Browse products with search and category filtering
 
->**Note**: Make sure you have completed the [React Native - Environment Setup](https://reactnative.dev/docs/environment-setup) instructions till "Creating a new application" step, before proceeding.
+Product Details - View detailed product information with quantity selector
 
-## Step 1: Start the Metro Server
+Shopping Cart - Add/remove items, update quantities, and view totals
 
-First, you will need to start **Metro**, the JavaScript _bundler_ that ships _with_ React Native.
+Wishlist - Save favorite products for later
 
-To start Metro, run the following command from the _root_ of your React Native project:
+Dark Mode - Seamless dark/light theme switching
 
-```bash
-# using npm
+Profile Screen - View stats and manage preferences
+
+Real-time Updates - Cart badge shows item count instantly
+
+📱 Screenshots
+[Screenshots will be added here]
+
+🚀 Getting Started
+Prerequisites
+Before you begin, ensure you have met the following requirements:
+
+Node.js (version 14 or newer)
+
+npm or yarn package manager
+
+React Native CLI (npm install -g react-native-cli)
+
+Android Studio (for Android development)
+
+Xcode (for iOS development, macOS only)
+
+iOS Simulator (for iOS, macOS only) or Android Emulator
+
+Environment Setup
+Note: Make sure you have completed the React Native Environment Setup instructions before proceeding.
+
+Step 1: Install Dependencies
+Navigate to the project root and install all required dependencies:
+
+bash
+# Using npm
+npm install
+
+# OR using Yarn
+yarn install
+For iOS Only
+If you're developing for iOS, install the CocoaPods dependencies:
+
+bash
+cd ios && pod install && cd ..
+Step 2: Start the Metro Server
+First, you will need to start Metro, the JavaScript bundler that comes with React Native.
+
+bash
+# Using npm
 npm start
 
 # OR using Yarn
 yarn start
-```
 
-## Step 2: Start your Application
+# To clear cache if needed
+npm start -- --reset-cache
+Step 3: Start your Application
+Let Metro Bundler run in its own terminal. Open a new terminal from the project root and run:
 
-Let Metro Bundler run in its _own_ terminal. Open a _new_ terminal from the _root_ of your React Native project. Run the following command to start your _Android_ or _iOS_ app:
-
-### For Android
-
-```bash
-# using npm
+For Android
+bash
+# Using npm
 npm run android
 
 # OR using Yarn
 yarn android
-```
-
-### For iOS
-
-```bash
-# using npm
+For iOS
+bash
+# Using npm
 npm run ios
 
 # OR using Yarn
 yarn ios
-```
+If everything is set up correctly, you should see your app running in your Android Emulator or iOS Simulator shortly.
 
-If everything is set up _correctly_, you should see your new app running in your _Android Emulator_ or _iOS Simulator_ shortly provided you have set up your emulator/simulator correctly.
+📦 Dependencies
+This project uses the following main dependencies:
 
-This is one way to run your app — you can also run it directly from within Android Studio and Xcode respectively.
+json
+{
+  "react-native-vector-icons": "^10.0.0",
+  "@react-navigation/native": "^6.1.7",
+  "@react-navigation/bottom-tabs": "^6.5.8",
+  "@react-navigation/native-stack": "^6.9.13",
+  "react-native-screens": "^3.22.1",
+  "react-native-safe-area-context": "^4.7.1",
+  "react-native-gesture-handler": "^2.12.0"
+}
+🏗 Project Structure
+text
+OnlineShopApp/
+├── src/
+│   ├── context/
+│   │   └── ShopContext.js          # Global state management
+│   ├── screens/
+│   │   ├── HomeScreen.js           # Product listing screen
+│   │   ├── ProductDetailScreen.js  # Product details screen
+│   │   ├── CartScreen.js           # Shopping cart screen
+│   │   ├── WishlistScreen.js       # Wishlist screen
+│   │   └── ProfileScreen.js        # User profile screen
+│   └── navigation/
+│       └── AppNavigator.js         # Navigation configuration
+├── App.js                          # Main app component
+└── package.json
+🎯 How to Use the App
+Navigation Guide
+Home Screen (Default)
 
-## Step 3: Modifying your App
+Browse all available products
 
-Now that you have successfully run the app, let's modify it.
+Use the search bar to find specific items
 
-1. Open `App.tsx` in your text editor of choice and edit some lines.
-2. For **Android**: Press the <kbd>R</kbd> key twice or select **"Reload"** from the **Developer Menu** (<kbd>Ctrl</kbd> + <kbd>M</kbd> (on Window and Linux) or <kbd>Cmd ⌘</kbd> + <kbd>M</kbd> (on macOS)) to see your changes!
+Filter products by category using chips
 
-   For **iOS**: Hit <kbd>Cmd ⌘</kbd> + <kbd>R</kbd> in your iOS Simulator to reload the app and see your changes!
+Tap any product to view details
 
-## Congratulations! :tada:
+Tap the heart icon to add/remove from wishlist
 
-You've successfully run and modified your React Native App. :partying_face:
+Product Details
 
-### Now what?
+View full product description and specifications
 
-- If you want to add this new React Native code to an existing application, check out the [Integration guide](https://reactnative.dev/docs/integration-with-existing-apps).
-- If you're curious to learn more about React Native, check out the [Introduction to React Native](https://reactnative.dev/docs/getting-started).
+Adjust quantity using + and - buttons
 
-# Troubleshooting
+Check real-time stock availability
 
-If you can't get this to work, see the [Troubleshooting](https://reactnative.dev/docs/troubleshooting) page.
+Tap "Add to Cart" to purchase
 
-# Learn More
+Cart Screen
 
-To learn more about React Native, take a look at the following resources:
+Review all items added to cart
 
-- [React Native Website](https://reactnative.dev) - learn more about React Native.
-- [Getting Started](https://reactnative.dev/docs/environment-setup) - an **overview** of React Native and how setup your environment.
-- [Learn the Basics](https://reactnative.dev/docs/getting-started) - a **guided tour** of the React Native **basics**.
-- [Blog](https://reactnative.dev/blog) - read the latest official React Native **Blog** posts.
-- [`@facebook/react-native`](https://github.com/facebook/react-native) - the Open Source; GitHub **repository** for React Native.
+Modify quantities or remove items
+
+View subtotal and total prices
+
+Proceed to checkout (demo only)
+
+Wishlist Screen
+
+View all saved products
+
+Quickly add items to cart
+
+Remove items from wishlist
+
+Profile Screen
+
+View shopping statistics
+
+Toggle dark mode on/off
+
+Access account settings (UI demo)
+
+🎨 Customization
+Modifying the App
+Open App.js in your text editor to modify the main app component
+
+Edit screen files in src/screens/ to change UI and functionality
+
+Modify ShopContext.js to add more features or change the data structure
+
+For Android:
+Press <kbd>R</kbd> twice or select "Reload" from the Developer Menu (<kbd>Ctrl</kbd> + <kbd>M</kbd> on Windows/Linux, <kbd>Cmd ⌘</kbd> + <kbd>M</kbd> on macOS)
+
+For iOS:
+Hit <kbd>Cmd ⌘</kbd> + <kbd>R</kbd> in the iOS Simulator to reload
