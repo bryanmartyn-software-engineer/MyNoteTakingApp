@@ -1,20 +1,20 @@
 import React, { useContext, useRef, useEffect } from 'react';
-import { View, Text, FlatList, TouchableOpacity, StyleSheet, TouchableWithoutFeedback } from 'react-native';
+import { View, Text, FlatList, TouchableOpacity, StyleSheet, TouchableWithoutFeedback, Dimensions } from 'react-native';
 import { Swipeable } from 'react-native-gesture-handler';
 import MaterialIcons from 'react-native-vector-icons/MaterialIcons';
 import { NotesContext } from '../context/NotesContext';
+
+const { width } = Dimensions.get('window');
 
 export default function AllNotesScreen({ navigation }) {
   const { notes, deleteNote, toggleFavorite, darkMode } = useContext(NotesContext);
   const swipeableRefs = useRef(new Map());
   const currentlyOpenSwipeableId = useRef(null);
 
-  // Close any open swipeable when tapping outside
   useEffect(() => {
     const unsubscribe = navigation.addListener('focus', () => {
       closeAllSwipeables();
     });
-
     return unsubscribe;
   }, [navigation]);
 
@@ -49,7 +49,6 @@ export default function AllNotesScreen({ navigation }) {
   };
 
   const onSwipeableOpen = (itemId) => {
-    // Close previously open swipeable
     if (currentlyOpenSwipeableId.current && currentlyOpenSwipeableId.current !== itemId) {
       const previousRef = swipeableRefs.current.get(currentlyOpenSwipeableId.current);
       if (previousRef) {
@@ -64,23 +63,31 @@ export default function AllNotesScreen({ navigation }) {
       <TouchableOpacity
         style={[styles.actionButton, styles.favoriteButton]}
         onPress={() => handleFavorite(item)}
+        activeOpacity={0.7}
       >
         <MaterialIcons 
           name={item.favorite ? "favorite" : "favorite-border"} 
-          size={28} 
+          size={24} 
           color="#fff" 
         />
       </TouchableOpacity>
       <TouchableOpacity
         style={[styles.actionButton, styles.deleteButton]}
         onPress={() => handleDelete(item)}
+        activeOpacity={0.7}
       >
-        <MaterialIcons name="delete" size={28} color="#fff" />
+        <MaterialIcons name="delete" size={24} color="#fff" />
       </TouchableOpacity>
     </View>
   );
 
-  const renderItem = ({ item }) => {
+  const renderItem = ({ item, index }) => {
+    const formattedDate = new Date(item.createdAt || Date.now()).toLocaleDateString('en-US', {
+      month: 'short',
+      day: 'numeric',
+      year: 'numeric'
+    });
+
     return (
       <Swipeable 
         ref={ref => {
@@ -95,7 +102,7 @@ export default function AllNotesScreen({ navigation }) {
         friction={2}
         rightThreshold={40}
         onSwipeableOpen={() => onSwipeableOpen(item.id)}
-        containerStyle={{ marginBottom: 10 }}
+        containerStyle={styles.swipeableContainer}
       >
         <TouchableOpacity
           style={[styles.card, darkMode && styles.darkCard]}
@@ -105,23 +112,34 @@ export default function AllNotesScreen({ navigation }) {
           }}
           activeOpacity={0.7}
         >
-          <View style={styles.cardHeader}>
-            <Text style={[styles.title, darkMode && styles.darkText]} numberOfLines={1}>
-              {item.title || 'Untitled'}
+          <View style={styles.cardContent}>
+            <View style={styles.cardHeader}>
+              <Text style={[styles.title, darkMode && styles.darkText]} numberOfLines={1}>
+                {item.title || 'Untitled'}
+              </Text>
+              {item.favorite && (
+                <View style={styles.favoriteBadge}>
+                  <MaterialIcons name="favorite" size={16} color="#FF6B6B" />
+                </View>
+              )}
+            </View>
+            <Text 
+              style={[styles.content, darkMode && styles.darkSubText]} 
+              numberOfLines={2}
+            >
+              {item.content || 'No content'}
             </Text>
-            {item.favorite && (
-              <MaterialIcons name="favorite" size={20} color="#FF6B6B" />
-            )}
+            <View style={styles.cardFooter}>
+              <MaterialIcons 
+                name="access-time" 
+                size={12} 
+                color={darkMode ? '#666' : '#999'} 
+              />
+              <Text style={[styles.date, darkMode && styles.darkSubText]}>
+                {formattedDate}
+              </Text>
+            </View>
           </View>
-          <Text 
-            style={[styles.content, darkMode && styles.darkSubText]} 
-            numberOfLines={2}
-          >
-            {item.content || 'No content'}
-          </Text>
-          <Text style={[styles.date, darkMode && styles.darkSubText]}>
-            {new Date(item.createdAt || Date.now()).toLocaleDateString()}
-          </Text>
         </TouchableOpacity>
       </Swipeable>
     );
@@ -141,10 +159,16 @@ export default function AllNotesScreen({ navigation }) {
           showsVerticalScrollIndicator={false}
           onScrollBeginDrag={closeAllSwipeables}
           scrollEventThrottle={16}
+          contentContainerStyle={[
+            styles.listContent,
+            notes.length === 0 && styles.emptyListContent
+          ]}
           ListEmptyComponent={
             <View style={styles.emptyContainer}>
-              <MaterialIcons name="note" size={64} color={darkMode ? '#444' : '#ccc'} />
-              <Text style={[styles.emptyText, darkMode && styles.darkSubText]}>
+              <View style={[styles.emptyIconContainer, darkMode && styles.darkEmptyIconContainer]}>
+                <MaterialIcons name="note" size={48} color={darkMode ? '#6C63FF' : '#6C63FF'} />
+              </View>
+              <Text style={[styles.emptyText, darkMode && styles.darkText]}>
                 No notes yet
               </Text>
               <Text style={[styles.emptySubText, darkMode && styles.darkSubText]}>
@@ -152,10 +176,6 @@ export default function AllNotesScreen({ navigation }) {
               </Text>
             </View>
           }
-          contentContainerStyle={[
-            notes.length === 0 && styles.emptyList,
-            { flexGrow: 1 }
-          ]}
         />
 
         <TouchableOpacity
@@ -176,26 +196,41 @@ export default function AllNotesScreen({ navigation }) {
 const styles = StyleSheet.create({
   container: {
     flex: 1,
-    padding: 15,
-    backgroundColor: '#f5f5f5',
+    backgroundColor: '#f8f9fa',
   },
   darkContainer: {
     backgroundColor: '#121212',
   },
-  card: {
-    backgroundColor: '#fff',
+  listContent: {
     padding: 16,
-    borderRadius: 12,
-    elevation: 2,
+    paddingBottom: 80,
+  },
+  emptyListContent: {
+    flex: 1,
+    justifyContent: 'center',
+    alignItems: 'center',
+  },
+  swipeableContainer: {
+    marginBottom: 12,
+    borderRadius: 16,
+    overflow: 'hidden',
+  },
+  card: {
+    backgroundColor: '#ffffff',
+    borderRadius: 16,
     shadowColor: '#000',
-    shadowOffset: { width: 0, height: 1 },
+    shadowOffset: { width: 0, height: 2 },
     shadowOpacity: 0.1,
-    shadowRadius: 2,
+    shadowRadius: 8,
+    elevation: 3,
   },
   darkCard: {
     backgroundColor: '#1e1e1e',
     shadowColor: '#000',
     shadowOpacity: 0.3,
+  },
+  cardContent: {
+    padding: 16,
   },
   cardHeader: {
     flexDirection: 'row',
@@ -204,47 +239,62 @@ const styles = StyleSheet.create({
     marginBottom: 8,
   },
   title: {
+    fontSize: 18,
     fontWeight: '600',
-    fontSize: 16,
-    color: '#333',
+    color: '#2c3e50',
     flex: 1,
     marginRight: 8,
+    letterSpacing: 0.3,
+  },
+  favoriteBadge: {
+    width: 28,
+    height: 28,
+    borderRadius: 14,
+    backgroundColor: 'rgba(255, 107, 107, 0.1)',
+    justifyContent: 'center',
+    alignItems: 'center',
   },
   content: {
-    color: '#666',
     fontSize: 14,
-    marginBottom: 8,
+    color: '#7f8c8d',
+    marginBottom: 12,
     lineHeight: 20,
+    letterSpacing: 0.2,
+  },
+  cardFooter: {
+    flexDirection: 'row',
+    alignItems: 'center',
+    gap: 4,
   },
   date: {
-    color: '#999',
     fontSize: 12,
+    color: '#95a5a6',
+    letterSpacing: 0.2,
   },
   darkText: {
-    color: '#fff',
+    color: '#ecf0f1',
   },
   darkSubText: {
-    color: '#aaa',
+    color: '#bdc3c7',
   },
   actionContainer: {
     flexDirection: 'row',
     alignItems: 'center',
-    justifyContent: 'flex-end',
     height: '100%',
     gap: 8,
-    paddingRight: 8,
+    paddingRight: 16,
   },
   actionButton: {
-    width: 56,
-    height: 56,
-    borderRadius: 28,
+    width: 48,
+    height: 48,
+    borderRadius: 24,
     justifyContent: 'center',
     alignItems: 'center',
-    elevation: 4,
     shadowColor: '#000',
     shadowOffset: { width: 0, height: 2 },
-    shadowOpacity: 0.25,
-    shadowRadius: 3.84,
+    shadowOpacity: 0.2,
+    shadowRadius: 4,
+    elevation: 4,
   },
   favoriteButton: {
     backgroundColor: '#6C63FF',
@@ -262,32 +312,41 @@ const styles = StyleSheet.create({
     borderRadius: 28,
     justifyContent: 'center',
     alignItems: 'center',
-    elevation: 4,
-    shadowColor: '#000',
-    shadowOffset: { width: 0, height: 2 },
-    shadowOpacity: 0.25,
-    shadowRadius: 3.84,
+    shadowColor: '#6C63FF',
+    shadowOffset: { width: 0, height: 4 },
+    shadowOpacity: 0.3,
+    shadowRadius: 8,
+    elevation: 6,
   },
   emptyContainer: {
-    flex: 1,
+    alignItems: 'center',
+    justifyContent: 'center',
+    paddingHorizontal: 32,
+  },
+  emptyIconContainer: {
+    width: 96,
+    height: 96,
+    borderRadius: 48,
+    backgroundColor: 'rgba(108, 99, 255, 0.1)',
     justifyContent: 'center',
     alignItems: 'center',
-    minHeight: 400,
+    marginBottom: 16,
+  },
+  darkEmptyIconContainer: {
+    backgroundColor: 'rgba(108, 99, 255, 0.2)',
   },
   emptyText: {
-    fontSize: 18,
+    fontSize: 20,
     fontWeight: '600',
-    color: '#666',
-    marginTop: 16,
+    color: '#2c3e50',
+    marginBottom: 8,
+    letterSpacing: 0.3,
   },
   emptySubText: {
     fontSize: 14,
-    color: '#999',
-    marginTop: 8,
+    color: '#7f8c8d',
     textAlign: 'center',
-    paddingHorizontal: 20,
-  },
-  emptyList: {
-    flex: 1,
+    lineHeight: 20,
+    letterSpacing: 0.2,
   },
 });
